@@ -3,6 +3,12 @@
 SQLITE="sqlite /home/julio/bin/sdown/downdb"
 SERVER="192.168.1.10:9091 --auth admin:admin"
 DIR=~/bin/series/titles/
+VERSION="0.0.2"
+
+echo "down $VERSION - Copyleft (GPL v3) Julio Serrano 2016"
+echo "Revisar nuevas series en elitetorrent y descargar las indicadas"
+echo "según la misma estructura de clat."
+echo
 
 cd "$DIR"
 
