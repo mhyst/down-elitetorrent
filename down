@@ -55,11 +55,33 @@ function isSeries {
 function isDownloaded {
 	local filename="$1"
 	local res=""
+	declare -a parts
+
+	let i=0
+	for part in $filename; do
+		parts[i]=$part
+		let i++
+	done
+
+	size=${#parts[@]}
+	let size--
+
+	local name=""
+	for ((i=0; i<$size; i++)); do
+		name="$name${parts[i]} "
+	done
+
+	local episodio="${parts[$size]}"
+
+	name=`unaccent utf-8 "$name"`
+
+	echo "Nombre: $name, Episodio: $episodio" >&2
 
 	#Le preguntamos a transmission si ya tiene el archivo
-	res=`transmission-remote $SERVER --list | grep "$filename"`
+	res=`transmission-remote $SERVER --list | grep "$name" | grep "$episodio"`
 	
-	if [ ${#res} > 0 ]; then
+	echo "$res" >&2
+	if [[ ${#res} > 0 ]]; then
 		echo true
 	else
 		echo false
