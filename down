@@ -80,7 +80,7 @@ function isDownloaded {
 	#Le preguntamos a transmission si ya tiene el archivo
 	res=`transmission-remote $SERVER --list | grep "$name" | grep "$episodio"`
 	
-	echo "$res" >&2
+	#echo "$res" >&2
 	if [[ ${#res} > 0 ]]; then
 		echo true
 	else
