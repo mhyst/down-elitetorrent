@@ -3,7 +3,7 @@
 SERVER="192.168.1.10:9091 --auth admin:admin"
 DIR=~/bin/series/titles/
 
-VERSION="0.0.3"
+VERSION="0.0.4"
 
 echo "down $VERSION - Copyleft (GPL v3) Julio Serrano 2016"
 echo "Revisar nuevas series en elitetorrent y descargar las indicadas"
@@ -22,7 +22,8 @@ function download {
 	echo ">>>Recuperando el magnet"
 	#Extraemos el magnet.
 	local magnet=`curl "http://www.elitetorrent.net$url" | grep magnet | grep -Po '"magnet:.*?"' | sed 's/\("magnet:\|"\)//g'`
-	while [[ $magnet=="" ]]; do
+	#echo ">$magnet<"
+	while [[ $magnet == "" ]]; do
 		echo "La recuperación del magnet ha fallado."
 		echo "Esperando 5 segundos antes de reintentar..."
 		sleep 5
@@ -95,14 +96,22 @@ function isDownloaded {
 	fi
 }
 
+if [[ $1 = "" ]]; then
+	urlfrom="http://www.elitetorrent.net/categoria/4/series"
+elif [[ $1 == "-u" ]]; then
+	urlfrom="$2"
+else
+	urlfrom="http://www.elitetorrent.net/busqueda/$1 $2 $3 $4 $5 $6 $7 $8 $9"
+fi
+
 echo  "Descargando portada de elitetorrent..."
-curl 'http://www.elitetorrent.net/categoria/4/series' | grep '<a href="/torrent/' > /tmp/elitetorrent.txt
+curl "$urlfrom" | grep '<a href="/torrent/' > /tmp/elitetorrent.txt
 FILESIZE=$(stat -c%s "/tmp/elitetorrent.txt")
 while [[ $FILESIZE == 0 ]]; do
 	echo "La descarga ha fallado."
 	echo "Esperando 5 segundos antes de volver a intentarlo..."
 	sleep 5
-	curl 'http://www.elitetorrent.net/categoria/4/series' | grep '<a href="/torrent/' > /tmp/elitetorrent.txt
+	curl "$urlfrom" | grep '<a href="/torrent/' > /tmp/elitetorrent.txt
 	FILESIZE=$(stat -c%s "/tmp/elitetorrent.txt")
 done
 echo  "Descargada\n"

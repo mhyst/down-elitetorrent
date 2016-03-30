@@ -16,3 +16,11 @@ down sigue la misma estrategia que clat. Se necesita un directorio que contenga 
 
 Antes de ejecutar el script hay que abrirlo y modificar las variables SERVER y DIR.
 SERVER contiene un fragmento necesario para la linea de comandos de transmission-remote. La dirección IP del ordenador donde está Transmission, el puerto, y si en la configuración de Transmission hemos elegido introducir usuario y contraseña, estos deberán añadirse también detrás de --auth, sustituyendo admin:admin por lo que hayas elegido poner. DIR contiene la ruta hacia el directorio en el que se guardan los archivos con los nombres de tus series, como decíamos en el párrafo anterior. Una vez cambiadas esas dos variables, ya sólo nos queda comprobar la conexión a Internet y escribir down en una terminal.
+
+## Opciones
+
+* La forma más sencilla es sin opciones. Descargará la página de la sección de series sin necesidad de ningún argumento.
+
+* Si ponemos algún argumento, down entenderá que debe buscarlo en elitetorrent. Para que tenga éxito el argumento debe coincidir con el título de alguna serie o película.
+
+* Si como primer parámetro ponemos -u, a continuación podemos pasarle la url que queramos. Para que funcione deberá tener la misma estructura de elitetorrent. Por ejemplo podemos facilitarle una página concreta del mismo elitetorrent con episodios o películas que queramos añadir a Transmission para descargar. De esa forma podremos descargar episodios o películas que no estén en los índices generales de la web.
