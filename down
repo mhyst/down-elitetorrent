@@ -3,7 +3,7 @@
 SERVER="192.168.1.10:9091 --auth admin:admin"
 DIR=~/bin/series/titles/
 
-VERSION="0.0.4"
+VERSION="0.0.5"
 
 echo "down $VERSION - Copyleft (GPL v3) Julio Serrano 2016"
 echo "Revisar nuevas series en elitetorrent y descargar las indicadas"
@@ -15,6 +15,7 @@ cd "$DIR"
 function download {
 	local name="$1"
 	local line="$2"
+	local series="$3"
 
 	#Extraemos la url de la etiqueta href
 	local url=`echo "$line" | grep '<a href="/torrent/' | grep "$name" | grep -Po 'href=".*?"' | sed 's/\(href="\|"\)//g'`
@@ -32,8 +33,10 @@ function download {
 
 	echo ">>>magnet:$magnet"
 	echo ">>>Añadiendo a transmission"
+
+	folder=`cat "$DIR$series"`
 	#Como quitamos "magnet:" de la cadena, después tenemos que aádir magnet:
-	transmission-remote $SERVER --add "magnet:$magnet"
+	transmission-remote $SERVER --add "magnet:$magnet" --download-dir "$folder"
 	#setDownloaded "$name"
 }
 
@@ -53,7 +56,7 @@ function isSeries {
 			else
 				echo "    No lo tenemos"
 				#Llamamos a la funcion que descargará el archivo
-				download "$name" "$line"
+				download "$name" "$line" "$serie"
 			fi
 			break
     	fi
