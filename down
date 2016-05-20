@@ -2,8 +2,9 @@
 
 SERVER="192.168.0.10:9091 --auth admin:admin"
 DIR=~/bin/scripts/series/titles/
+LOGFILE=~/bin/scripts/dxtotal/log
 
-VERSION="0.1.0"
+VERSION="0.1.1"
 
 echo "down $VERSION - Copyleft (GPL v3) Julio Serrano 2016"
 echo "Revisar nuevas series en elitetorrent y descargar las indicadas"
@@ -11,6 +12,11 @@ echo "según la misma estructura de clat."
 echo
 
 cd "$DIR"
+
+log() {
+	local name="$1"
+	echo "`date +"%d/%m/%Y %H:%M"` $name" >> $LOGFILE
+}
 
 function download {
 	local name="$1"
@@ -38,6 +44,7 @@ function download {
 	#Como quitamos "magnet:" de la cadena, después tenemos que aádir magnet:
 	transmission-remote $SERVER --add "magnet:$magnet" --download-dir "$folder"
 	#setDownloaded "$name"
+	log "$name"
 }
 
 function isSeries {
@@ -71,6 +78,7 @@ function isDownloaded {
 	local res=""
 
 
+	serie=`unaccent utf-8 "$serie"`
 	echo "Nombre: $serie, Episodio: $episode" >&2
 
 	#Le preguntamos a transmission si ya tiene el archivo
@@ -81,13 +89,13 @@ function isDownloaded {
 		echo true
 	else
 		#Hacemos la misma comprobación, sustituyendo espacios con puntos
-		local name=`echo "$serie" | tr " " .`
-		res=`transmission-remote $SERVER --list | grep "$name" | grep "$episode"`
-		if [[ ${#res} > 0 ]]; then
-			echo true
-		else
+		# local name=`echo "$serie" | tr " " .`
+		# res=`transmission-remote $SERVER --list | grep "$name" | grep "$episode"`
+		# if [[ ${#res} > 0 ]]; then
+		# 	echo true
+		# else
 			echo false
-		fi
+		#fi
 	fi
 }
 
