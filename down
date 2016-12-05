@@ -4,7 +4,7 @@ SERVER="192.168.0.10:9091 --auth admin:admin"
 DIR=~/bin/scripts/series/titles/
 LOGFILE=~/bin/scripts/dxtotal/log
 
-VERSION="0.2.0"
+VERSION="0.2.1"
 
 echo "down $VERSION - Copyleft (GPL v3) Julio Serrano 2016"
 echo "Revisar nuevas series en elitetorrent y descargar las indicadas"
@@ -28,13 +28,13 @@ function download {
 	echo ">>>Url: $url"
 	echo ">>>Recuperando el magnet"
 	#Extraemos el magnet.
-	local magnet=`curl "http://www.elitetorrent.net$url" | grep magnet | grep -Po '"magnet:.*?"' | sed 's/\("magnet:\|"\)//g'`
+	local magnet=`curl --cookie /tmp/cookies.txt "http://www.elitetorrent.net$url" | grep magnet | grep -Po '"magnet:.*?"' | sed 's/\("magnet:\|"\)//g'`
 	#echo ">$magnet<"
 	while [[ $magnet == "" ]]; do
 		echo "La recuperación del magnet ha fallado."
 		echo "Esperando 5 segundos antes de reintentar..."
 		sleep 5
-		magnet=`curl "http://www.elitetorrent.net$url" | grep magnet | grep -Po '"magnet:.*?"' | sed 's/\("magnet:\|"\)//g'`
+		magnet=`curl --cookie /tmp/cookies.txt "http://www.elitetorrent.net$url" | grep magnet | grep -Po '"magnet:.*?"' | sed 's/\("magnet:\|"\)//g'`
 	done		
 
 	echo ">>>magnet:$magnet"
@@ -51,6 +51,7 @@ function isSeries {
 	local name="$1"
 	local line="$2"
 	local res=false
+	#Continuamos buscando series?
 
 	#Recorremos el directorio de las series mismo de clat
 	for serie in *; do
@@ -142,6 +143,10 @@ function isDownloaded {
 # 	fi
 # }
 
+#Recuperamos los cookies
+curl -c /tmp/cookies.txt www.elitetorrent.net
+
+
 if [[ $1 = "" ]]; then
 	urlfrom="http://www.elitetorrent.net/categoria/4/series"
 elif [[ $1 == "-u" ]]; then
@@ -152,13 +157,13 @@ fi
 
 echo  "Descargando portada de elitetorrent..."
 echo "$urlfrom"
-curl "$urlfrom" | grep '<a href="/torrent/' > /tmp/elitetorrent.txt
+curl --cookie /tmp/cookies.txt "$urlfrom" | grep '<a href="/torrent/' > /tmp/elitetorrent.txt
 FILESIZE=$(stat -c%s "/tmp/elitetorrent.txt")
 while [[ $FILESIZE == 0 ]]; do
 	echo "La descarga ha fallado."
 	echo "Esperando 5 segundos antes de volver a intentarlo..."
 	sleep 5
-	curl "$urlfrom" | grep '<a href="/torrent/' > /tmp/elitetorrent.txt
+	curl --cookie /tmp/cookies.txt "$urlfrom" | grep '<a href="/torrent/' > /tmp/elitetorrent.txt
 	FILESIZE=$(stat -c%s "/tmp/elitetorrent.txt")
 done
 echo  "Descargada\n"
@@ -171,6 +176,7 @@ exec < /tmp/elitetorrent.txt
 
 let count=0
 
+romper=false
 while read line; do
 	#Queremos la etiqueta title, pero sólo su contenido
 	name=`echo "$line" | grep -Po 'title=".*?"' | sed 's/\(title="\|"\)//g'`
