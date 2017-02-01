@@ -144,7 +144,7 @@ function isDownloaded {
 # }
 
 #Recuperamos los cookies
-curl -c /tmp/cookies.txt www.elitetorrent.net
+curl -c /tmp/cookies.txt www.elitetorrent.net >/dev/null
 
 
 if [[ $1 = "" ]]; then
